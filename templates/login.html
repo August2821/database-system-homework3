@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}{{ label }} 로그인{% endblock %}
+{% block content %}
+<h1 class="page">{{ label }} 로그인</h1>
+<p class="lead">
+  {% if role == 'teacher' %}학생이신가요? <a href="{{ url_for('login', role = 'student') }}">학생 로그인</a>
+  {% else %}교사이신가요? <a href="{{ url_for('login', role = 'teacher') }}">교사 로그인</a>{% endif %}
+</p>
+{% if message %}
+  <div class="message {{ 'success' if ok else 'error' }}" role="{{ 'status' if ok else 'alert' }}">{{ message }}</div>
+{% endif %}
+<form method="post" action="{{ url_for('login', role = role) }}" class="card form">
+  <label>이메일
+    <input type="email" name="Email" required>
+  </label>
+  <label>비밀번호
+    <input type="password" name="password" required autocomplete="current-password">
+  </label>
+  <button type="submit">로그인</button>
+</form>
+{% endblock %}

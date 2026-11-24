@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% from "_table.html" import result_table %}
+{% block title %}{{ label }} 가입{% endblock %}
+{% block content %}
+<h1 class="page">{{ label }} 가입</h1>
+<p class="lead">{{ label }} 계정과 전화번호를 함께 저장합니다. 하나라도 거부되면 아무것도 저장되지 않습니다.</p>
+
+{% if new_rows %}
+  <div class="message success" role="status">{{ label }} 가입이 완료되었습니다. 추가된 행은 다음과 같습니다.</div>
+  <section class="card">
+    {{ result_table(new_cols, new_rows) }}
+  </section>
+{% endif %}
+
+{% if error %}
+  <div class="message error" role="alert"><strong>가입하지 못했습니다.</strong><br>{{ error }}</div>
+{% endif %}
+
+{# novalidate: 브라우저 검사 대신 DB 규칙이 직접 검사하도록 해서 거부된 INSERT를 확인할 수 있습니다 #}
+<form method="post" action="{{ url_for('register', role = role) }}" class="card form" novalidate>
+  <label>{{ id_label }}
+    <input type="text" inputmode="numeric" name="id" value="{{ form.id }}" placeholder="예: {{ 6 if role == 'teacher' else 107 }}">
+  </label>
+  <div class="row">
+    <label>이름
+      <input type="text" name="FirstName" value="{{ form.FirstName }}" maxlength="25">
+    </label>
+    <label>성
+      <input type="text" name="LastName" value="{{ form.LastName }}" maxlength="25">
+    </label>
+  </div>
+  <label>이메일
+    <input type="email" name="Email" value="{{ form.Email }}" maxlength="100">
+  </label>
+  <label>비밀번호
+    <input type="password" name="password" autocomplete="new-password">
+  </label>
+
+  <fieldset class="phones">
+    <legend>전화번호 (1개 이상)</legend>
+    <div id="phone-list">
+      {% for p in phones %}
+      <div class="phone-row">
+        <input type="tel" name="PhoneNumber" value="{{ p }}" placeholder="010-0000-0000" maxlength="20" aria-label="전화번호">
+        <button type="button" class="ghost remove-phone">삭제</button>
+      </div>
+      {% endfor %}
+    </div>
+    <button type="button" class="ghost" id="add-phone">전화번호 추가</button>
+  </fieldset>
+
+  <button type="submit">{{ label }} 가입</button>
+</form>
+
+<script>
+  const list = document.getElementById("phone-list");
+  document.getElementById("add-phone").addEventListener("click", () => {
+    const row = list.firstElementChild.cloneNode(true);
+    row.querySelector("input").value = "";
+    list.appendChild(row);
+    row.querySelector("input").focus();
+  });
+  list.addEventListener("click", (e) => {
+    if (!e.target.classList.contains("remove-phone")) return;
+    if (list.children.length > 1) e.target.closest(".phone-row").remove();
+    else e.target.closest(".phone-row").querySelector("input").value = "";
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Add teacher{% endblock %}
+{% block content %}
+<h1>Add teacher</h1>
+<p class="lead">Creates a new row in the Teacher table. The password is stored as a hash.</p>
+
+{% if new_row %}
+  <div class="alert success" role="status">Teacher added successfully. This is the new row:</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>TeacherID</th><th>FirstName</th><th>LastName</th><th>Email</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="num">{{ new_row.TeacherID }}</td>
+          <td>{{ new_row.FirstName }}</td>
+          <td>{{ new_row.LastName }}</td>
+          <td>{{ new_row.Email }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+{% endif %}
+
+{% if error %}
+  <div class="alert error" role="alert"><strong>Could not add teacher.</strong> {{ error }}</div>
+{% endif %}
+
+{# novalidate: lets the DBMS check the rules so rejected inserts can be shown #}
+<form method="post" action="{{ url_for('register_teacher') }}" class="card form" novalidate>
+  <label>Teacher ID
+    <input type="text" inputmode="numeric" name="TeacherID" value="{{ form.TeacherID }}" placeholder="e.g. 6">
+  </label>
+  <div class="row">
+    <label>First name
+      <input type="text" name="FirstName" value="{{ form.FirstName }}" maxlength="25">
+    </label>
+    <label>Last name
+      <input type="text" name="LastName" value="{{ form.LastName }}" maxlength="25">
+    </label>
+  </div>
+  <label>Email
+    <input type="email" name="Email" value="{{ form.Email }}" maxlength="100">
+  </label>
+  <label>Password
+    <input type="password" name="password" autocomplete="new-password">
+  </label>
+  <button type="submit">Add teacher</button>
+</form>
+{% endblock %}

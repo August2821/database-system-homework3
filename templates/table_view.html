@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% from "_table.html" import result_table %}
+{% block title %}{{ cfg.label }} 조회{% endblock %}
+{% block content %}
+<p class="crumb"><a href="{{ url_for('tables_index') }}">전체 테이블</a> / {{ cfg.label }}</p>
+<div class="head-row">
+  <h1 class="page">{{ cfg.label }} <span class="opt">({{ name }})</span></h1>
+  {% if cfg.register %}
+    <a class="btn" href="{{ url_for('register', role = cfg.register) }}">가입</a>
+  {% else %}
+    <a class="btn" href="{{ url_for('table_new', name = name) }}">행 추가</a>
+  {% endif %}
+</div>
+<p class="lead">{{ cfg.desc }}</p>
+
+{% if error %}
+  <div class="message error" role="alert">{{ error }}</div>
+{% else %}
+  <section class="card">
+    {{ result_table(columns, rows) }}
+  </section>
+  <details class="sqlbox"><summary>사용된 SQL</summary><pre class="sql">{{ sql }}</pre></details>
+{% endif %}
+{% endblock %}

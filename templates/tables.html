@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}전체 테이블{% endblock %}
+{% block content %}
+<h1 class="page">전체 테이블</h1>
+<p class="lead">테이블을 열어 데이터를 조회하거나 새 행을 추가하세요. 교사와 학생은 가입 페이지에서 전화번호와 함께 등록합니다.</p>
+
+{% if error %}
+  <div class="message error" role="alert">{{ error }}</div>
+{% else %}
+<div class="grid three">
+  {% for name, cfg, cnt in items %}
+  <article class="card tcard">
+    <h2>{{ cfg.label }}</h2>
+    <p class="en">{{ name }}</p>
+    <p class="desc">{{ cfg.desc }}</p>
+    <p class="rows">{{ cnt }}개의 행</p>
+    <div class="btns">
+      <a class="btn ghost" href="{{ url_for('table_view', name = name) }}">조회</a>
+      {% if cfg.register %}
+        <a class="btn" href="{{ url_for('register', role = cfg.register) }}">가입</a>
+      {% else %}
+        <a class="btn" href="{{ url_for('table_new', name = name) }}">행 추가</a>
+      {% endif %}
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from "_table.html" import result_table %}
+{% block title %}통계{% endblock %}
+{% block content %}
+<h1 class="page">통계</h1>
+<p class="lead">여러 테이블을 JOIN하고 GROUP BY로 묶은 결과입니다.</p>
+
+{% if error %}
+  <div class="message error" role="alert">{{ error }}</div>
+{% else %}
+<section class="card">
+  <h2>교사별 단어 수</h2>
+  <p class="hint-top">Teacher, WordFile, Word를 JOIN하고 교사별로 GROUP BY했습니다. 파일이 없는 교사는 0으로 표시됩니다.</p>
+  {{ result_table(teacher_cols, teacher_rows) }}
+</section>
+
+<section class="card">
+  <h2>학생별 시험 정답률</h2>
+  <p class="hint-top">Student, Test, TestResult를 JOIN하고 학생별로 GROUP BY했습니다. 정답률의 단위는 퍼센트(%)입니다.</p>
+  {{ result_table(student_cols, student_rows) }}
+</section>
+{% endif %}
+{% endblock %}

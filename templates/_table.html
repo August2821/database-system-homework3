@@ -1,0 +1,24 @@
+{# 결과 표. 행이 없으면 "No results"를 보여 줍니다. #}
+{% macro result_table(columns, rows, keyword = '') %}
+  {% if rows %}
+    <p class="count">총 {{ rows|length }}개의 행</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>{% for c in columns %}<th>{{ c|col_label }}</th>{% endfor %}</tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+          <tr>
+            {% for c in columns %}
+              <td{% if row[c] is number %} class="num"{% endif %}>{{ row[c]|highlight(keyword) }}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="empty"><strong>No results</strong>조건에 맞는 데이터가 없습니다.</p>
+  {% endif %}
+{% endmacro %}

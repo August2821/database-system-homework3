@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Teacher login{% endblock %}
+{% block content %}
+<h1>Teacher login</h1>
+{% if message %}
+  <div class="alert {{ 'success' if ok else 'error' }}" role="{{ 'status' if ok else 'alert' }}">{{ message }}</div>
+{% endif %}
+<form method="post" action="{{ url_for('login') }}" class="card form">
+  <label>Email
+    <input type="email" name="Email" required>
+  </label>
+  <label>Password
+    <input type="password" name="password" required autocomplete="current-password">
+  </label>
+  <button type="submit">Log in</button>
+</form>
+{% endblock %}

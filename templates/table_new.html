@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% from "_table.html" import result_table %}
+{% block title %}{{ cfg.label }} 추가{% endblock %}
+{% block content %}
+<p class="crumb"><a href="{{ url_for('tables_index') }}">전체 테이블</a> / <a href="{{ url_for('table_view', name = name) }}">{{ cfg.label }}</a> / 행 추가</p>
+<h1 class="page">{{ cfg.label }} 추가 <span class="opt">({{ name }})</span></h1>
+<p class="lead">{{ cfg.desc }}</p>
+
+{% if new_rows %}
+  <div class="message success" role="status">행이 추가되었습니다. 추가된 행은 다음과 같습니다.</div>
+  <section class="card">
+    {{ result_table(new_cols, new_rows) }}
+  </section>
+{% endif %}
+
+{% if error %}
+  <div class="message error" role="alert"><strong>행을 추가하지 못했습니다.</strong><br>{{ error }}</div>
+{% endif %}
+
+{% if sql %}
+  <details class="sqlbox" {% if error or new_rows %}open{% endif %}>
+    <summary>사용된 SQL</summary>
+    <pre class="sql">{{ sql }}
+-- 값: {{ params|join(', ') }}</pre>
+  </details>
+{% endif %}
+
+{# novalidate: 브라우저 검사 대신 DB 규칙이 직접 검사하도록 해서 거부된 INSERT를 확인할 수 있습니다 #}
+<form method="post" action="{{ url_for('table_new', name = name) }}" class="card form" novalidate>
+  {% for f in cfg.fields %}
+  <label>{{ f.label }}{% if not f.required or f.default %}<span class="opt"> (선택)</span>{% endif %}
+    {% if f.kind in ('select', 'word') %}
+      <select name="{{ f.name }}">
+        <option value="">{{ '(없음)' if (not f.required or f.default) else '선택하세요' }}</option>
+        {% for value, label in options.get(f.name, []) %}
+          <option value="{{ value }}" {% if value == raw.get(f.name) %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    {% elif f.kind == 'enum' %}
+      <select name="{{ f.name }}">
+        <option value="">{{ '(기본값)' if f.default else '선택하세요' }}</option>
+        {% for c in f.choices %}
+          <option value="{{ c }}" {% if c == raw.get(f.name) %}selected{% endif %}>{{ c }}</option>
+        {% endfor %}
+      </select>
+    {% elif f.kind == 'date' %}
+      <input type="date" name="{{ f.name }}" value="{{ raw.get(f.name, '') }}">
+    {% else %}
+      <input type="text" name="{{ f.name }}" value="{{ raw.get(f.name, '') }}"
+        {% if f.kind == 'int' %}inputmode="numeric"{% endif %}
+        {% if f.maxlen %}maxlength="{{ f.maxlen }}"{% endif %}>
+    {% endif %}
+    {% if f.hint %}<small class="hint">{{ f.hint }}</small>{% endif %}
+  </label>
+  {% endfor %}
+  <button type="submit">행 추가</button>
+</form>
+{% endblock %}

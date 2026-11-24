@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}홈{% endblock %} · WordTest Database</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header>
+  <h1><a href="{{ url_for('home') }}">WordTest Database</a></h1>
+  <p>단어 시험 관리 · 교사와 학생 · 시험 통계</p>
+  <nav>
+    <a href="{{ url_for('tables_index') }}" {% if request.endpoint in ('tables_index', 'table_view', 'table_new') %}aria-current="page"{% endif %}>전체 테이블</a>
+    <a href="{{ url_for('search_words') }}" {% if request.endpoint == 'search_words' %}aria-current="page"{% endif %}>단어 검색</a>
+    <a href="{{ url_for('stats') }}" {% if request.endpoint == 'stats' %}aria-current="page"{% endif %}>통계</a>
+    <a href="{{ url_for('register', role = 'teacher') }}" {% if request.endpoint == 'register' and role == 'teacher' %}aria-current="page"{% endif %}>교사 가입</a>
+    <a href="{{ url_for('register', role = 'student') }}" {% if request.endpoint == 'register' and role == 'student' %}aria-current="page"{% endif %}>학생 가입</a>
+    <a href="{{ url_for('login', role = 'teacher') }}" {% if request.endpoint == 'login' %}aria-current="page"{% endif %}>로그인</a>
+  </nav>
+</header>
+<main>
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>
