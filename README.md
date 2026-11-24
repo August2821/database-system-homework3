@@ -4,6 +4,8 @@ HW2에서 만든 `wordtest` 데이터베이스에 연결한 Flask 웹 페이지�
 13개 테이블 모두 웹에서 조회(SELECT)하고 추가(INSERT)할 수 있습니다.
 화면은 한국어로 되어 있고, 검색 결과가 없을 때의 "No results" 문구만 과제 조건에 맞춰 영어로 두었습니다.
 
+이 README는 **우분투(Ubuntu) 기준**으로 작성했습니다.
+
 ## 주요 페이지
 
 | 페이지 | 주소 | 기능 |
@@ -21,48 +23,64 @@ HW2에서 만든 `wordtest` 데이터베이스에 연결한 Flask 웹 페이지�
 
 ## 준비물
 
+- Ubuntu
 - Python 3.10 이상
 - MySQL 8.0.16 이상 (CHECK 제약 조건과 `default (expression)` 문법 때문에 필요합니다)
+- Git
+
+아직 설치하지 않았다면 다음 명령으로 git, python3, python3-venv (python의 가상환경), mysql을 설치합니다.
+
+```bash
+sudo apt update
+sudo apt install -y git python3 python3-venv python3-pip mysql-server
+```
 
 ## 설치 및 실행 방법
 
-0. **저장소 내려받기**
+1. **저장소 내려받기**
    ```bash
    git clone https://github.com/August2821/database-system-homework3.git
    cd database-system-homework3
    ```
    (zip 파일로 받았다면 압축을 풀고 그 폴더에서 터미널을 열면 됩니다.)
 
-1. **DB 사용자 만들기** (MySQL root 계정으로 실행)
+2. **MySQL 서버 실행 확인**
+   ```bash
+   sudo systemctl start mysql
+   sudo systemctl status mysql      # active (running)이면 정상, q로 나가기
+   ```
+
+3. **스키마 생성과 샘플 데이터 입력**
+   ```bash
+   sudo mysql < schema.sql
+   sudo mysql < data.sql
+   ```
+   우분투의 MySQL은 root 계정이 비밀번호 대신 `sudo`로 로그인하므로 `sudo mysql`을 사용합니다.
+   이미 `wordtest` DB가 있다면 먼저 `sudo mysql`로 접속한 뒤에 `drop database wordtest;`로 `wordtest` DB를 지운 뒤 실행하세요.
+
+4. **DB 사용자 만들고 권한 부여**
+   ```bash
+   sudo mysql
+   ```
    ```sql
    create user if not exists 'flaskuser'@'localhost' identified by '1234';
+   "grant all privileges on wordtest.* to 'flaskuser'@'localhost'; flush privileges;
    ```
+   비밀번호 정책 때문에 `1234`가 거부되면 `database.py`의 비밀번호와 위 명령의 비밀번호를 같은 다른 값으로 바꾸세요.
 
-2. **스키마 생성과 샘플 데이터 입력**
+5. **패키지 설치** (가상환경 사용)
    ```bash
-   mysql -u root -p < schema.sql
-   mysql -u root -p < data.sql
-   ```
-   이미 `wordtest` DB가 있다면 먼저 `drop database wordtest;`로 지운 뒤 실행하세요.
-
-3. **권한 부여** (MySQL root 계정으로 실행)
-   ```sql
-   grant all privileges on wordtest.* to 'flaskuser'@'localhost';
-   flush privileges;
-   ```
-
-4. **패키지 설치** (가상환경 사용을 권장합니다)
-   ```bash
-   python -m venv venv
-   source venv/bin/activate        # 윈도우: venv\Scripts\activate
+   python3 -m venv venv
+   source venv/bin/activate
    pip install -r requirements.txt
    ```
+   우분투에서는 `python`이 아니라 `python3` 명령어를 사용합니다.
 
-5. **실행**
+6. **실행**
    ```bash
-   python app.py
+   python3 app.py
    ```
-   브라우저에서 http://127.0.0.1:5000 으로 접속합니다.
+   브라우저에서 http://127.0.0.1:5000 으로 접속합니다. 종료는 터미널에서 `Ctrl + C`입니다.
 
 DB 접속 정보는 `database.py`에 있습니다 (host `localhost`, user `flaskuser`, password `1234`, database `wordtest`).
 환경 변수 `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`으로 바꿀 수도 있습니다.
@@ -83,6 +101,12 @@ DB 접속 정보는 `database.py`에 있습니다 (host `localhost`, user `flask
   - `Word`에서 이미 있는 파일과 단어 번호를 넣으면 기본키 중복 오류가 납니다.
 - 외래키 칸은 DB에 있는 값만 드롭다운으로 고르게 했습니다. 그래서 외래키 오류 대신, 필수 드롭다운을 비워 두면 NOT NULL 오류가 납니다.
 
+## 문제 해결
+
+- `Access denied for user 'flaskuser'` 오류: 4단계의 사용자 생성과 권한 부여를 다시 실행하고, 비밀번호가 `database.py`와 같은지 확인하세요.
+- `Can't connect to MySQL server` 오류: 2단계로 MySQL 서버가 켜져 있는지 확인하세요.
+- `python3 -m venv venv`가 실패하면 `sudo apt install python3-venv`를 실행하세요.
+
 ## SQL 관련 참고
 
 - 사용자가 입력한 값은 모두 `%s` 파라미터로 전달합니다. 문자열을 이어 붙이는 방식은 쓰지 않았습니다.
@@ -92,9 +116,9 @@ DB 접속 정보는 `database.py`에 있습니다 (host `localhost`, user `flask
 
 ## HW2 대비 변경 사항
 
-- 스키마 변경 없음. `schema.sql`은 HW2 스키마에 `create database` 한 줄만 추가한 것입니다.
-- 비밀번호는 평문으로 저장합니다 (과제용 단순 구현).
-- 전화번호는 가입할 때 함께 입력받습니다. 웹 페이지에서는 최소 1개를 필수로 하며, 스키마 자체는 전화번호 없는 사용자도 허용합니다.
+- 스키마 변경 없음.
+- 비밀번호는 평문으로 저장합니다 (암호화 없음).
+- 전화번호는 가입할 때 함께 입력받습니다.
 
 ## 파일 구성
 
