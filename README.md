@@ -26,6 +26,13 @@ HW2에서 만든 `wordtest` 데이터베이스에 연결한 Flask 웹 페이지�
 
 ## 설치 및 실행 방법
 
+0. **저장소 내려받기**
+   ```bash
+   git clone https://github.com/August2821/database-system-homework3.git
+   cd database-system-homework3
+   ```
+   (zip 파일로 받았다면 압축을 풀고 그 폴더에서 터미널을 열면 됩니다.)
+
 1. **DB 사용자 만들기** (MySQL root 계정으로 실행)
    ```sql
    create user if not exists 'flaskuser'@'localhost' identified by '1234';
@@ -92,12 +99,27 @@ DB 접속 정보는 `database.py`에 있습니다 (host `localhost`, user `flask
 ## 파일 구성
 
 ```
-app.py            Flask 라우트와 SQL
-tables.py         13개 테이블의 입력 항목 정의와 조회·추가 SQL
-database.py       MySQL 연결
-schema.sql        테이블 정의 (HW2)
-data.sql          샘플 데이터 (테이블마다 5행 이상)
-requirements.txt  패키지 목록
-templates/        HTML 페이지
-static/style.css  스타일
+homework3
+├── README.md
+├── app.py
+├── data.sql
+├── database.py
+├── requirements.txt
+├── schema.sql
+├── static
+│   └── style.css
+├── tables.py
+└── templates
+    ├── _table.html
+    ├── base.html
+    ├── index.html
+    ├── login.html
+    ├── login_teacher.html
+    ├── register.html
+    ├── register_teacher.html
+    ├── search_words.html
+    ├── stats.html
+    ├── table_new.html
+    ├── table_view.html
+    └── tables.html
 ```
