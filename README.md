@@ -64,7 +64,8 @@ sudo apt install -y git python3 python3-venv python3-pip mysql-server
    ```
    ```sql
    create user if not exists 'flaskuser'@'localhost' identified by '1234';
-   "grant all privileges on wordtest.* to 'flaskuser'@'localhost'; flush privileges;
+   grant all privileges on wordtest.* to 'flaskuser'@'localhost';
+   flush privileges;
    ```
    비밀번호 정책 때문에 `1234`가 거부되면 `database.py`의 비밀번호와 위 명령의 비밀번호를 같은 다른 값으로 바꾸세요.
 
